@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:multi_role/QrCodeScanner/qr.dart';
-import 'package:multi_role/QrCodeScanner/qr_code_scanner.dart';
+import 'package:multi_role/QrCodeScanner/qr_code_genrator.dart';
 import 'package:multi_role/WebView/web_view_page.dart';
 import 'package:multi_role/docscanner/doc_scanner.dart';
 
