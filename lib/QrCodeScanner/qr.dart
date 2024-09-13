@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:multi_role/QrCodeScanner/barcode_label.dart';
 import 'package:multi_role/QrCodeScanner/barcodewidgets/scan_button.dart';
@@ -17,8 +18,56 @@ class _BarcodeScannerWithOverlayState extends State<BarcodeScannerWithOverlay> {
   final MobileScannerController controller = MobileScannerController(
     formats: const [BarcodeFormat.qrCode],
   );
+  late InterstitialAd _interstitialAd;
+  bool _isInterstitialAdLoaded = false;
 
   bool _isNavigating = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadInterstitialAd();
+  }
+
+  void _loadInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: 'ca-app-pub-3940256099942544/1033173712', // Test ad unit ID
+      request: AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (InterstitialAd ad) {
+          setState(() {
+            _interstitialAd = ad;
+            _isInterstitialAdLoaded = true;
+          });
+          print('InterstitialAd loaded.');
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          print('InterstitialAd failed to load: $error');
+          setState(() {
+            _isInterstitialAdLoaded = false;
+          });
+        },
+      ),
+    );
+  }
+
+  void _showInterstitialAd() {
+    if (_isInterstitialAdLoaded) {
+      _interstitialAd.fullScreenContentCallback = FullScreenContentCallback(
+        onAdDismissedFullScreenContent: (InterstitialAd ad) {
+          ad.dispose();
+          _loadInterstitialAd(); // Load a new ad for future use
+        },
+        onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+          ad.dispose();
+          _loadInterstitialAd(); // Load a new ad for future use
+        },
+      );
+      _interstitialAd.show();
+    } else {
+      print('InterstitialAd is not loaded yet.');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +93,7 @@ class _BarcodeScannerWithOverlayState extends State<BarcodeScannerWithOverlay> {
                   setState(() {
                     _isNavigating = true;
                   });
-
+                  _showInterstitialAd();
                   // Navigate to BarcodeLabelScreen
                   Navigator.of(context)
                       .push(
@@ -115,6 +164,7 @@ class _BarcodeScannerWithOverlayState extends State<BarcodeScannerWithOverlay> {
   Future<void> dispose() async {
     super.dispose();
     await controller.dispose();
+    _interstitialAd.dispose();
   }
 }
 
