@@ -17,8 +17,8 @@ class FilterPreviewScreen extends StatefulWidget {
 
 class _FilterPreviewScreenState extends State<FilterPreviewScreen> {
   late img.Image _image;
-  String _selectedFilter = 'original'; // Track selected filter
-  final Map<String, Uint8List> _filterCache = {}; // Cache for filtered images
+  String _selectedFilter = 'original';
+  final Map<String, Uint8List> _filterCache = {};
 
   @override
   void initState() {
@@ -31,7 +31,7 @@ class _FilterPreviewScreenState extends State<FilterPreviewScreen> {
     setState(() {
       _image = img.decodeImage(imageBytes)!;
     });
-    _preloadFilteredImages(); // Preload all filtered images
+    await _preloadFilteredImages(); // Ensure filters are preloaded
   }
 
   Future<void> _preloadFilteredImages() async {
@@ -56,17 +56,27 @@ class _FilterPreviewScreenState extends State<FilterPreviewScreen> {
 
   Future<void> _applyFilter(String filterType) async {
     setState(() {
-      _selectedFilter = filterType; // Update selected filter
+      _selectedFilter = filterType;
     });
-    // Update image with the selected filter
-    final editedFile = await applyFilter(File(widget.imagePath), filterType);
-    final editedBytes = editedFile.readAsBytesSync();
-    setState(() {
-      _image = img.decodeImage(editedBytes)!;
-    });
+    if (_filterCache.containsKey(filterType)) {
+      final bytes = _filterCache[filterType]!;
+      setState(() {
+        _image = img.decodeImage(Uint8List.fromList(bytes))!;
+      });
+    } else {
+      final editedFile = await applyFilter(File(widget.imagePath), filterType);
+      final editedBytes = editedFile.readAsBytesSync();
+      _filterCache[filterType] = Uint8List.fromList(editedBytes);
+      setState(() {
+        _image = img.decodeImage(editedBytes)!;
+      });
+    }
   }
 
   Future<Uint8List> _getFilteredImage(String filterType) async {
+    if (_filterCache.containsKey(filterType)) {
+      return _filterCache[filterType]!;
+    }
     final editedFile = await applyFilter(File(widget.imagePath), filterType);
     return Uint8List.fromList(editedFile.readAsBytesSync());
   }
@@ -83,14 +93,13 @@ class _FilterPreviewScreenState extends State<FilterPreviewScreen> {
           ),
         ],
       ),
-      // ignore: unnecessary_null_comparison
       body: _image == null
           ? Center(child: CircularProgressIndicator())
           : Column(
               children: [
                 Expanded(
                   child:
-                      Image.memory(Uint8List.fromList(img.encodeJpg(_image))),
+                      Image.memory(Uint8List.fromList(img.encodeJpg(_image)!)),
                 ),
                 SizedBox(height: 10),
                 _buildFilterOptions(),
@@ -138,8 +147,7 @@ class _FilterPreviewScreenState extends State<FilterPreviewScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 border: isSelected
-                    ? Border.all(
-                        color: Colors.blue, width: 3) // Selected border
+                    ? Border.all(color: Colors.blue, width: 3)
                     : null,
                 image: imageBytes != null
                     ? DecorationImage(
@@ -150,7 +158,7 @@ class _FilterPreviewScreenState extends State<FilterPreviewScreen> {
               ),
               child: imageBytes == null
                   ? Center(child: CircularProgressIndicator())
-                  : null, // Show loader while image is being loaded
+                  : null,
             ),
             SizedBox(height: 8),
             Text(filterType,
@@ -167,7 +175,6 @@ class _FilterPreviewScreenState extends State<FilterPreviewScreen> {
         '${directory.path}/${DateTime.now().millisecondsSinceEpoch}_edited.jpg';
     final file = File(path)..writeAsBytesSync(img.encodeJpg(_image)!);
 
-    Navigator.of(context)
-        .pop(file.path); // Return the saved file path to the previous screen
+    Navigator.of(context).pop(file.path);
   }
 }

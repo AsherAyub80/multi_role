@@ -8,13 +8,13 @@ Future<File> applyFilter(File imageFile, String filterType) async {
   img.Image? editedImage;
 
   switch (filterType) {
-     case 'original':
-      editedImage =(image!);
+    case 'original':
+      editedImage = (image!);
       break;
     case 'grayscale':
       editedImage = img.grayscale(image!);
       break;
-      
+
     case 'invert':
       editedImage = img.invert(image!);
       break;

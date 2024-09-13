@@ -1,7 +1,9 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:cunning_document_scanner/cunning_document_scanner.dart';
-import 'package:multi_role/docscanner/filter_preview.dart';
+import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:multi_role/docscanner/full_image.dart';
+import 'package:multi_role/docscanner/filter_preview.dart'; // Import FilterPreviewScreen
 
 class DocScanner extends StatefulWidget {
   const DocScanner({Key? key}) : super(key: key);
@@ -15,9 +17,53 @@ class _DocScannerState extends State<DocScanner> {
   bool _isLoading = false;
   Future<String?>? _navigationFuture;
 
+  late InterstitialAd _interstitialAd;
+  bool _isInterstitialAdLoaded = false;
+
   @override
   void initState() {
     super.initState();
+    _loadInterstitialAd();
+  }
+
+  void _loadInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: 'ca-app-pub-3940256099942544/1033173712', // Test ad unit ID
+      request: AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (InterstitialAd ad) {
+          setState(() {
+            _interstitialAd = ad;
+            _isInterstitialAdLoaded = true;
+          });
+          print('InterstitialAd loaded.');
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          print('InterstitialAd failed to load: $error');
+          setState(() {
+            _isInterstitialAdLoaded = false;
+          });
+        },
+      ),
+    );
+  }
+
+  void _showInterstitialAd() {
+    if (_isInterstitialAdLoaded) {
+      _interstitialAd.fullScreenContentCallback = FullScreenContentCallback(
+        onAdDismissedFullScreenContent: (InterstitialAd ad) {
+          ad.dispose();
+          _loadInterstitialAd(); // Load a new ad for future use
+        },
+        onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+          ad.dispose();
+          _loadInterstitialAd(); // Load a new ad for future use
+        },
+      );
+      _interstitialAd.show();
+    } else {
+      print('InterstitialAd is not loaded yet.');
+    }
   }
 
   Future<void> _fetchPictures() async {
@@ -31,6 +77,8 @@ class _DocScannerState extends State<DocScanner> {
         setState(() {
           _pictures.addAll(newPictures);
         });
+
+        _showInterstitialAd();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('No pictures returned')),
@@ -47,25 +95,38 @@ class _DocScannerState extends State<DocScanner> {
     }
   }
 
-  Future<void> _openFilterPreview(String imagePath) async {
-    setState(() {
-      _navigationFuture = Navigator.of(context)
-          .push(
-        MaterialPageRoute(
-          builder: (context) => FilterPreviewScreen(imagePath: imagePath),
+  Future<void> _openFullScreenImageViewer(int index) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => FullScreenImageViewer(
+          imagePaths: _pictures,
+          initialIndex: index,
         ),
-      )
-          .then((updatedImagePath) {
-        if (updatedImagePath != null) {
-          setState(() {
-            final index = _pictures.indexOf(imagePath);
-            if (index != -1) {
-              _pictures[index] = updatedImagePath;
-            }
-          });
+      ),
+    );
+  }
+
+  Future<void> _navigateToFilterScreen(String imagePath) async {
+    final updatedImagePath = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => FilterPreviewScreen(imagePath: imagePath),
+      ),
+    ) as String?;
+
+    if (updatedImagePath != null) {
+      setState(() {
+        final index = _pictures.indexOf(imagePath);
+        if (index != -1) {
+          _pictures[index] = updatedImagePath;
         }
       });
-    });
+    }
+  }
+
+  @override
+  void dispose() {
+    _interstitialAd.dispose();
+    super.dispose();
   }
 
   @override
@@ -102,64 +163,63 @@ class _DocScannerState extends State<DocScanner> {
                 ],
               ),
             )
-          : FutureBuilder<void>(
-              future: _navigationFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: Text('Loading...'),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error occurred: ${snapshot.error}'),
-                  );
-                } else {
-                  return Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 20),
-                        Expanded(
-                          child: _pictures.isEmpty
-                              ? Center(child: Text('No pictures found'))
-                              : GridView.builder(
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3,
-                                    crossAxisSpacing: 8.0,
-                                    mainAxisSpacing: 8.0,
-                                    childAspectRatio: 1.0,
-                                  ),
-                                  itemCount: _pictures.length,
-                                  itemBuilder: (context, index) {
-                                    final picture = _pictures[index];
-                                    return GestureDetector(
-                                      onTap: () => _openFilterPreview(picture),
-                                      child: Card(
-                                        elevation: 4,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                          child: Image.file(
-                                            File(picture),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
+          : _pictures.isEmpty
+              ? Center(child: Text('No pictures found'))
+              : GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 8.0,
+                    mainAxisSpacing: 8.0,
+                    childAspectRatio: 1.0,
+                  ),
+                  itemCount: _pictures.length,
+                  itemBuilder: (context, index) {
+                    final picture = _pictures[index];
+                    return GestureDetector(
+                      onTap: () => _openFullScreenImageViewer(index),
+                      onLongPress: () => _showFilterDialog(picture),
+                      child: Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                      ],
-                    ),
-                  );
-                }
-              },
-            ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.file(
+                            File(picture),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+    );
+  }
+
+  void _showFilterDialog(String imagePath) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Apply Filter'),
+        content: Text('Choose a filter to apply to this image.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _showInterstitialAd();
+              _navigateToFilterScreen(imagePath);
+            },
+            child: Text('Open Filters'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('Cancel'),
+          ),
+        ],
+      ),
     );
   }
 }

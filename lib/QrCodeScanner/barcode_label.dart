@@ -6,10 +6,13 @@ import 'package:multi_role/WebView/webview.dart';
 class BarcodeLabelScreen extends StatelessWidget {
   final Stream<BarcodeCapture> barcodeData;
 
+
+
   const BarcodeLabelScreen({
     super.key,
     required this.barcodeData,
   });
+
 
   @override
   Widget build(BuildContext context) {
