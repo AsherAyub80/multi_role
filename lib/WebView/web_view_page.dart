@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewPage extends StatefulWidget {
@@ -12,10 +13,13 @@ class WebViewPage extends StatefulWidget {
 
 class _WebViewPageState extends State<WebViewPage> {
   late final WebViewController _controller;
+  late BannerAd _bannerAd;
+  bool _isAdLoaded = false;
 
   @override
   void initState() {
     super.initState();
+    _initializeBannerAd();
 
     // Initialize the WebViewController
     _controller = WebViewController()
@@ -47,13 +51,53 @@ class _WebViewPageState extends State<WebViewPage> {
       ..loadRequest(Uri.parse(widget.url));
   }
 
+  void _initializeBannerAd() {
+    _bannerAd = BannerAd(
+      adUnitId:
+          'ca-app-pub-3940256099942544/6300978111', // Test Banner Ad Unit ID
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (Ad ad) {
+          setState(() {
+            _isAdLoaded = true;
+          });
+          print('BannerAd loaded.');
+        },
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          ad.dispose();
+          setState(() {
+            _isAdLoaded = false;
+          });
+          print('BannerAd failed to load: $error');
+        },
+      ),
+    );
+    _bannerAd.load();
+  }
+
+  @override
+  void dispose() {
+    _bannerAd.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('WebView'),
       ),
-      body: WebViewWidget(controller: _controller),
+      body: Column(
+        children: [
+          Expanded(child: WebViewWidget(controller: _controller)),
+          if (_isAdLoaded)
+            Container(
+              height: _bannerAd.size.height.toDouble(),
+              child: AdWidget(ad: _bannerAd),
+            ),
+        ],
+      ),
     );
   }
 }
