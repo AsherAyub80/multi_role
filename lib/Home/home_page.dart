@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:multi_role/MediaPlayer/audio_player.dart';
 import 'package:multi_role/QrCodeScanner/qr.dart';
 import 'package:multi_role/QrCodeScanner/qr_code_genrator.dart';
+import 'package:multi_role/MediaPlayer/videoplayer.dart';
 import 'package:multi_role/WebView/web_view_page.dart';
 import 'package:multi_role/docscanner/doc_scanner.dart';
+import 'package:multi_role/theme/theme_controller.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -22,7 +26,8 @@ class _HomePageState extends State<HomePage> {
 
   void _initializeBannerAd() {
     _bannerAd = BannerAd(
-      adUnitId: 'ca-app-pub-3940256099942544/6300978111', // Test Banner Ad Unit ID
+      adUnitId:
+          'ca-app-pub-3940256099942544/6300978111', // Test Banner Ad Unit ID
       size: AdSize.banner,
       request: const AdRequest(),
       listener: BannerAdListener(
@@ -52,15 +57,23 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+              onPressed: () {
+                theme.toggleTheme();
+              },
+              icon: Icon(Icons.light)),
+        ],
         title: Text('Home Page'),
       ),
       body: Column(
         children: [
           Expanded(
             child: GridView.builder(
-              itemCount: 4,
+              itemCount: 6,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 2,
@@ -125,6 +138,11 @@ class _HomePageState extends State<HomePage> {
         return 'Scan QR Code';
       case 3:
         return 'Generate QR Code';
+
+      case 4:
+        return 'Video Player';
+      case 5:
+        return 'Audio Player';
       default:
         return '';
     }
@@ -142,7 +160,7 @@ class _HomePageState extends State<HomePage> {
               context,
               MaterialPageRoute(
                 builder: (context) => WebViewPage(
-                  url: 'https://pub.dev/packages/flutter_sales_graph',
+                  url: 'https://www.google.com/',
                 ),
               ),
             );
@@ -156,6 +174,17 @@ class _HomePageState extends State<HomePage> {
         return () => Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => QRCodeGenerator()),
+            );
+
+      case 4:
+        return () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => VideoPlayerScreen()),
+            );
+      case 5:
+        return () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AudioPlayer()),
             );
       default:
         return null;

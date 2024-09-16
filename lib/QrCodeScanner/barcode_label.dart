@@ -6,13 +6,10 @@ import 'package:multi_role/WebView/webview.dart';
 class BarcodeLabelScreen extends StatelessWidget {
   final Stream<BarcodeCapture> barcodeData;
 
-
-
   const BarcodeLabelScreen({
     super.key,
     required this.barcodeData,
   });
-
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +50,7 @@ class BarcodeLabelScreen extends StatelessWidget {
                     Text(
                       scannedBarcodes.first.displayValue ?? 'No display value.',
                       overflow: TextOverflow.fade,
-                      style: const TextStyle(color: Colors.black, fontSize: 18),
+                      style: const TextStyle(fontSize: 18),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),

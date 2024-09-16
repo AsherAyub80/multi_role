@@ -1,7 +1,8 @@
 import 'dart:io';
-import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:get_storage/get_storage.dart'; // Import GetStorage
+import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:multi_role/docscanner/full_image.dart';
 import 'package:multi_role/docscanner/filter_preview.dart'; // Import FilterPreviewScreen
 
@@ -17,13 +18,16 @@ class _DocScannerState extends State<DocScanner> {
   bool _isLoading = false;
   Future<String?>? _navigationFuture;
 
-  late InterstitialAd _interstitialAd;
+  InterstitialAd? _interstitialAd; // Change to nullable type
   bool _isInterstitialAdLoaded = false;
+
+  final GetStorage _storage = GetStorage(); // Initialize GetStorage
 
   @override
   void initState() {
     super.initState();
     _loadInterstitialAd();
+    _loadStoredPictures(); // Load stored pictures
   }
 
   void _loadInterstitialAd() {
@@ -49,8 +53,8 @@ class _DocScannerState extends State<DocScanner> {
   }
 
   void _showInterstitialAd() {
-    if (_isInterstitialAdLoaded) {
-      _interstitialAd.fullScreenContentCallback = FullScreenContentCallback(
+    if (_isInterstitialAdLoaded && _interstitialAd != null) {
+      _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
         onAdDismissedFullScreenContent: (InterstitialAd ad) {
           ad.dispose();
           _loadInterstitialAd(); // Load a new ad for future use
@@ -60,7 +64,7 @@ class _DocScannerState extends State<DocScanner> {
           _loadInterstitialAd(); // Load a new ad for future use
         },
       );
-      _interstitialAd.show();
+      _interstitialAd!.show();
     } else {
       print('InterstitialAd is not loaded yet.');
     }
@@ -78,6 +82,9 @@ class _DocScannerState extends State<DocScanner> {
           _pictures.addAll(newPictures);
         });
 
+        // Save to GetStorage
+        _storage.write('pictures', _pictures);
+
         _showInterstitialAd();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -93,6 +100,13 @@ class _DocScannerState extends State<DocScanner> {
         _isLoading = false;
       });
     }
+  }
+
+  void _loadStoredPictures() {
+    final storedPictures = _storage.read<List<String>>('pictures') ?? [];
+    setState(() {
+      _pictures.addAll(storedPictures);
+    });
   }
 
   Future<void> _openFullScreenImageViewer(int index) async {
@@ -118,6 +132,8 @@ class _DocScannerState extends State<DocScanner> {
         final index = _pictures.indexOf(imagePath);
         if (index != -1) {
           _pictures[index] = updatedImagePath;
+          // Update storage
+          _storage.write('pictures', _pictures);
         }
       });
     }
@@ -125,16 +141,14 @@ class _DocScannerState extends State<DocScanner> {
 
   @override
   void dispose() {
-    _interstitialAd.dispose();
+    _interstitialAd?.dispose(); 
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         title: Text('Document Scanner'),
         centerTitle: true,
         actions: [
