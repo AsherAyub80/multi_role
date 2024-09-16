@@ -1,0 +1,144 @@
+{
+  "project_info": {
+    "project_number": "846682976739",
+    "firebase_url": "https://signin-example-38945-default-rtdb.firebaseio.com",
+    "project_id": "signin-example-38945",
+    "storage_bucket": "signin-example-38945.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846682976739:android:0f652f8a553d314e6ff0d6",
+        "android_client_info": {
+          "package_name": "com.example.ecommerceadmin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgTDZK-00mzO2dCYALsLGHjUHjGi6WGPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846682976739:android:836d07eef50a285d6ff0d6",
+        "android_client_info": {
+          "package_name": "com.example.hackathon_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgTDZK-00mzO2dCYALsLGHjUHjGi6WGPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846682976739:android:8db0dfe1d121fe5b6ff0d6",
+        "android_client_info": {
+          "package_name": "com.example.medical_store_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgTDZK-00mzO2dCYALsLGHjUHjGi6WGPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846682976739:android:fb9d9eceb27389186ff0d6",
+        "android_client_info": {
+          "package_name": "com.example.multi_role"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgTDZK-00mzO2dCYALsLGHjUHjGi6WGPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846682976739:android:c902c39fa5eb5c926ff0d6",
+        "android_client_info": {
+          "package_name": "com.example.newui"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgTDZK-00mzO2dCYALsLGHjUHjGi6WGPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846682976739:android:6d235af7327a73416ff0d6",
+        "android_client_info": {
+          "package_name": "com.example.sign_in_methode"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgTDZK-00mzO2dCYALsLGHjUHjGi6WGPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846682976739:android:3594145349d22e296ff0d6",
+        "android_client_info": {
+          "package_name": "com.real_estate_app.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgTDZK-00mzO2dCYALsLGHjUHjGi6WGPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
