@@ -1,11 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:multi_role/GoogleMap/google_map.dart';
-import 'package:multi_role/auth/bio_metric.dart';
 import 'package:multi_role/firebase_options.dart';
+import 'package:multi_role/strippayment/payment_screen.dart';
+import 'package:multi_role/strippayment/payment_service.dart';
 import 'package:multi_role/theme/theme_controller.dart';
 import 'package:provider/provider.dart';
 
@@ -17,12 +19,17 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  Stripe.publishableKey =
+      'pk_test_51PxQxmJJK1h5n0shSnV82WeDJ3YihnBiFAUR65gFhNeRBySsCXAmlpxdWQ3FsS0glrKi8KdkFzy6Rn5qBT4AEdmH00aMbo8fiA';
+
+  await dotenv.load(fileName: "assets/.env");
   final fcmToken = await FirebaseMessaging.instance.getToken();
   print(fcmToken);
 
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ChangeNotifierProvider(create: (_) => PaymentService()),
     ],
     child: const MyApp(),
   ));
@@ -43,7 +50,7 @@ class MyApp extends StatelessWidget {
                 themeProvider.isDarkMode ? Brightness.dark : Brightness.light,
           ),
 
-          home: GoogleMaps(), // Replace with your actual home screen
+          home: PaymentScreen(), // Replace with your actual home screen
         );
       },
     );
