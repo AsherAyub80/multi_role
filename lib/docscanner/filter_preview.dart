@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 import 'package:multi_role/docscanner/image_editing.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:get/get.dart';
 
 class FilterPreviewScreen extends StatefulWidget {
   final String imagePath;
@@ -85,16 +86,26 @@ class _FilterPreviewScreenState extends State<FilterPreviewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Filter Preview'),
+        title: Text('filterPreview'.tr),
         actions: [
           IconButton(
             icon: Icon(Icons.check),
             onPressed: _saveImage,
+            tooltip: 'save'.tr,
           ),
         ],
       ),
       body: _image == null
-          ? Center(child: CircularProgressIndicator())
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 10),
+                  Text('loadingImage'.tr), // Localized loading message
+                ],
+              ),
+            )
           : Column(
               children: [
                 Expanded(

@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:get_storage/get_storage.dart'; // Import GetStorage
+import 'package:get_storage/get_storage.dart';
 import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:multi_role/docscanner/full_image.dart';
-import 'package:multi_role/docscanner/filter_preview.dart'; // Import FilterPreviewScreen
+import 'package:multi_role/docscanner/filter_preview.dart';
+import 'package:get/get.dart';
+
 
 class DocScanner extends StatefulWidget {
   const DocScanner({Key? key}) : super(key: key);
@@ -16,8 +18,6 @@ class DocScanner extends StatefulWidget {
 class _DocScannerState extends State<DocScanner> {
   final List<String> _pictures = [];
   bool _isLoading = false;
-  Future<String?>? _navigationFuture;
-
   InterstitialAd? _interstitialAd; // Change to nullable type
   bool _isInterstitialAdLoaded = false;
 
@@ -103,9 +103,14 @@ class _DocScannerState extends State<DocScanner> {
   }
 
   void _loadStoredPictures() {
-    final storedPictures = _storage.read<List<String>>('pictures') ?? [];
+    // Read as List<dynamic> first to avoid type issues
+    final storedPictures = _storage.read('pictures') as List<dynamic>?;
+
+    // Convert List<dynamic> to List<String>
+    final picturesList = storedPictures?.map((e) => e.toString()).toList() ?? [];
+
     setState(() {
-      _pictures.addAll(storedPictures);
+      _pictures.addAll(picturesList);
     });
   }
 
@@ -149,7 +154,7 @@ class _DocScannerState extends State<DocScanner> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Document Scanner'),
+        title: Text('documentScanner'.tr),
         centerTitle: true,
         actions: [
           IconButton(
@@ -172,13 +177,12 @@ class _DocScannerState extends State<DocScanner> {
                     ),
                   ),
                   SizedBox(height: 10),
-                  Text('Scanning...',
-                      style: TextStyle(fontSize: 18, color: Colors.grey)),
+                  Text('scanning'.tr, style: TextStyle(fontSize: 18, color: Colors.grey)),
                 ],
               ),
             )
           : _pictures.isEmpty
-              ? Center(child: Text('No pictures found'))
+              ? Center(child: Text('noPicturesFound'.tr))
               : GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
@@ -191,7 +195,7 @@ class _DocScannerState extends State<DocScanner> {
                     final picture = _pictures[index];
                     return GestureDetector(
                       onTap: () => _openFullScreenImageViewer(index),
-                      onLongPress: () => _showFilterDialog(picture),
+                      onLongPress: () => _showFilterDialog(picture,index),
                       child: Card(
                         elevation: 4,
                         shape: RoundedRectangleBorder(
@@ -211,12 +215,12 @@ class _DocScannerState extends State<DocScanner> {
     );
   }
 
-  void _showFilterDialog(String imagePath) {
+  void _showFilterDialog(String imagePath,index) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Apply Filter'),
-        content: Text('Choose a filter to apply to this image.'),
+        title: Text('applyFilter'.tr),
+        content: Text('chooseFilter'.tr),
         actions: [
           TextButton(
             onPressed: () {
@@ -224,13 +228,24 @@ class _DocScannerState extends State<DocScanner> {
               _showInterstitialAd();
               _navigateToFilterScreen(imagePath);
             },
-            child: Text('Open Filters'),
+            child: Text('applyFilter'.tr),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text('Cancel'),
+            child: Text('cancel'.tr),
+          ),
+
+          TextButton(
+            onPressed: () {
+              setState(() {
+                              _pictures.removeAt(index);
+
+              });
+              Navigator.of(context).pop();
+            },
+            child: Text('delete'.tr),
           ),
         ],
       ),
