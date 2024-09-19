@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:get/get.dart';
+
 
 class ScannedBarcodeLabel extends StatelessWidget {
   const ScannedBarcodeLabel({
@@ -17,8 +19,8 @@ class ScannedBarcodeLabel extends StatelessWidget {
         final scannedBarcodes = snapshot.data?.barcodes ?? [];
 
         if (scannedBarcodes.isEmpty) {
-          return const Text(
-            'Scan something!',
+          return Text(
+            'nothing'.tr, // Localized message
             overflow: TextOverflow.fade,
             style: TextStyle(color: Colors.white),
           );
@@ -27,7 +29,7 @@ class ScannedBarcodeLabel extends StatelessWidget {
         return Text(
           scannedBarcodes.first.displayValue ?? 'No display value.',
           overflow: TextOverflow.fade,
-          style: const TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white),
         );
       },
     );
