@@ -2,30 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:multi_role/WebView/webview.dart';
+import 'package:get/get.dart';
 
 class BarcodeLabelScreen extends StatelessWidget {
   final Stream<BarcodeCapture> barcodeData;
 
   const BarcodeLabelScreen({
-    super.key,
+    Key? key,
     required this.barcodeData,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scanned Barcode'),
+        title: Text('scannedBarcode'.tr), // Localized title
       ),
-      body: StreamBuilder(
+      body: StreamBuilder<BarcodeCapture>(
         stream: barcodeData,
         builder: (context, snapshot) {
           final scannedBarcodes = snapshot.data?.barcodes ?? [];
 
           if (scannedBarcodes.isEmpty) {
             return Center(
-              child: const Text(
-                'Nothing!',
+              child: Text(
+                'nothing'.tr, // Localized message
                 overflow: TextOverflow.fade,
                 style: TextStyle(color: Colors.black),
               ),
@@ -38,17 +39,17 @@ class BarcodeLabelScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Card(
-                margin: EdgeInsets.zero, // Remove the default margin
-                elevation: 4, // Adjust the elevation to your preference
+                margin: EdgeInsets.zero,
+                elevation: 4,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0), // Rounded corners
+                  borderRadius: BorderRadius.circular(12.0),
                 ),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min, // Fit to content size
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const SizedBox(height: 16),
                     Text(
-                      scannedBarcodes.first.displayValue ?? 'No display value.',
+                      displayValue,
                       overflow: TextOverflow.fade,
                       style: const TextStyle(fontSize: 18),
                       textAlign: TextAlign.center,
@@ -60,16 +61,14 @@ class BarcodeLabelScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           InkWell(
-                            splashColor: Colors.blue.withAlpha(30),
-                            highlightColor: Colors.transparent,
-                            borderRadius: BorderRadius.circular(12.0),
                             onTap: () {
                               Clipboard.setData(
                                       ClipboardData(text: displayValue))
                                   .then((_) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text('Copied to clipboard!'),
+                                    content: Text('copiedToClipboard'
+                                        .tr), // Localized message
                                   ),
                                 );
                               });
@@ -77,32 +76,31 @@ class BarcodeLabelScreen extends StatelessWidget {
                             child: Container(
                               padding: const EdgeInsets.all(12.0),
                               child: Row(
-                                children: const [
+                                children: [
                                   Icon(Icons.copy),
                                   SizedBox(width: 8.0),
-                                  Text('Copy'),
+                                  Text('copy'.tr), // Localized button text
                                 ],
                               ),
                             ),
                           ),
                           InkWell(
-                            splashColor: Colors.blue.withAlpha(30),
-                            highlightColor: Colors.transparent,
-                            borderRadius: BorderRadius.circular(12.0),
                             onTap: () {
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          Webview(url: displayValue)));
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      Webview(url: displayValue),
+                                ),
+                              );
                             },
                             child: Container(
                               padding: const EdgeInsets.all(12.0),
                               child: Row(
-                                children: const [
+                                children: [
                                   Icon(Icons.directions),
                                   SizedBox(width: 8.0),
-                                  Text('Redirect'),
+                                  Text('redirect'.tr), // Localized button text
                                 ],
                               ),
                             ),
