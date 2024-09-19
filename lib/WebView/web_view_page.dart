@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:get/get.dart';
+
 
 class WebViewPage extends StatefulWidget {
   final String url;
@@ -86,7 +88,7 @@ class _WebViewPageState extends State<WebViewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('WebView'),
+        title:  Text('webViewTitle'.tr),
       ),
       body: Column(
         children: [

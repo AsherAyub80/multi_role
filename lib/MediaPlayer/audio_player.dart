@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:media_kit/media_kit.dart';
 import 'dart:async';
+import 'package:get/get.dart';
 
 class AudioPlayer extends StatefulWidget {
   @override
@@ -21,7 +22,7 @@ class _AudioPlayerState extends State<AudioPlayer> {
   Duration _duration = Duration.zero;
   bool _isPlaying = false;
 
-  InterstitialAd? _interstitialAd; // Change to nullable type
+  InterstitialAd? _interstitialAd;
   bool _isInterstitialAdLoaded = false;
 
   late BannerAd _bannerAd;
@@ -38,24 +39,20 @@ class _AudioPlayerState extends State<AudioPlayer> {
         'title': 'Mera Dil Badal Dy',
         'artist': 'Junaid Jamshed',
         'releaseDate': '2010-01-01',
-        'url':
-            'https://humariweb.com/naats/jj/mera-dil-badal-da-(Hamariweb.com).mp3',
+        'url': 'https://humariweb.com/naats/jj/mera-dil-badal-da-(Hamariweb.com).mp3',
       },
       {
         'title': 'Faaslon Ko Takalluf',
         'artist': 'Waheed Zafar Qasmi',
         'releaseDate': '2001-06-01',
-        'url':
-            'https://humariweb.com/naats/22-10/faaslon~ko~takalluf-(hamariweb.com).mp3',
+        'url': 'https://humariweb.com/naats/22-10/faaslon~ko~takalluf-(hamariweb.com).mp3',
       },
-      // Add more tracks here
     ];
 
     _player = Player();
     _currentMedia = Media(_tracks[_currentIndex]['url']);
     _player.open(_currentMedia);
 
-    // Subscribe to the position and duration updates
     _positionSubscription = _player.stream.position.listen((position) {
       setState(() {
         _position = position;
@@ -67,6 +64,7 @@ class _AudioPlayerState extends State<AudioPlayer> {
         _duration = duration;
       });
     });
+
     _playingSubscription = _player.stream.playing.listen((playing) {
       setState(() {
         _isPlaying = playing;
@@ -88,7 +86,6 @@ class _AudioPlayerState extends State<AudioPlayer> {
   void _playPause() async {
     if (_isPlaying) {
       await _player.pause();
-      _showInterstitialAd();
     } else {
       await _player.play();
     }
@@ -100,7 +97,6 @@ class _AudioPlayerState extends State<AudioPlayer> {
 
   void _nextTrack() {
     _showInterstitialAd();
-
     setState(() {
       _currentIndex = (_currentIndex + 1) % _tracks.length;
       _currentMedia = Media(_tracks[_currentIndex]['url']);
@@ -129,8 +125,7 @@ class _AudioPlayerState extends State<AudioPlayer> {
 
   void _initializeBannerAd() {
     _bannerAd = BannerAd(
-      adUnitId:
-          'ca-app-pub-3940256099942544/6300978111', // Test Banner Ad Unit ID
+      adUnitId: 'ca-app-pub-3940256099942544/6300978111', // Test Banner Ad Unit ID
       size: AdSize.banner,
       request: const AdRequest(),
       listener: BannerAdListener(
@@ -138,14 +133,12 @@ class _AudioPlayerState extends State<AudioPlayer> {
           setState(() {
             _isAdLoaded = true;
           });
-          print('BannerAd loaded.');
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
           ad.dispose();
           setState(() {
             _isAdLoaded = false;
           });
-          print('BannerAd failed to load: $error');
         },
       ),
     );
@@ -162,10 +155,8 @@ class _AudioPlayerState extends State<AudioPlayer> {
             _interstitialAd = ad;
             _isInterstitialAdLoaded = true;
           });
-          print('InterstitialAd loaded.');
         },
         onAdFailedToLoad: (LoadAdError error) {
-          print('InterstitialAd failed to load: $error');
           setState(() {
             _isInterstitialAdLoaded = false;
           });
@@ -187,15 +178,13 @@ class _AudioPlayerState extends State<AudioPlayer> {
         },
       );
       _interstitialAd!.show();
-    } else {
-      print('InterstitialAd is not loaded yet.');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Audio Player')),
+      appBar: AppBar(title: Text('audioPlayerTitle'.tr)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -205,12 +194,11 @@ class _AudioPlayerState extends State<AudioPlayer> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    'Title: ${_tracks[_currentIndex]['title']}',
+                    'trackTitle'.tr +([_tracks[_currentIndex]['title']]).toString(),
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  Text('Artist: ${_tracks[_currentIndex]['artist']}'),
-                  Text(
-                      'Release Date: ${_tracks[_currentIndex]['releaseDate']}'),
+                  Text('trackArtist'.tr +([_tracks[_currentIndex]['artist']]).toString()),
+                  Text('trackReleaseDate'.tr + ([_tracks[_currentIndex]['releaseDate']]).toString()),
                   SizedBox(height: 20),
                   Container(
                     width: double.infinity,
@@ -221,9 +209,7 @@ class _AudioPlayerState extends State<AudioPlayer> {
                         Container(
                           width: (MediaQuery.of(context).size.width - 32) *
                               (_position.inMilliseconds /
-                                  (_duration.inMilliseconds == 0
-                                      ? 1
-                                      : _duration.inMilliseconds)),
+                                  (_duration.inMilliseconds == 0 ? 1 : _duration.inMilliseconds)),
                           height: 5,
                           color: Colors.blue,
                         ),
@@ -231,23 +217,20 @@ class _AudioPlayerState extends State<AudioPlayer> {
                     ),
                   ),
                   SizedBox(height: 10),
-                  Text(
-                      '${_position.toString().split('.').first} / ${_duration.toString().split('.').first}'),
+                  Text('${_position.toString().split('.').first} / ${_duration.toString().split('.').first}'),
                   SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       ElevatedButton(
                         onPressed: _playPause,
-                        child: Text(_isPlaying ? 'Pause' : 'Play'),
+                        child: Text(_isPlaying ? 'pause'.tr : 'play'.tr),
                       ),
-                      SizedBox(width: 10),
                       SizedBox(width: 10),
                       ElevatedButton(
                         onPressed: _stop,
-                        child: Text('Stop'),
+                        child: Text('stop'.tr),
                       ),
-                      SizedBox(width: 10),
                     ],
                   ),
                   Row(
@@ -255,12 +238,12 @@ class _AudioPlayerState extends State<AudioPlayer> {
                     children: [
                       ElevatedButton(
                         onPressed: _previousTrack,
-                        child: Text('Previous'),
+                        child: Text('previous'.tr),
                       ),
                       SizedBox(width: 10),
                       ElevatedButton(
                         onPressed: _nextTrack,
-                        child: Text('Next'),
+                        child: Text('next'.tr),
                       ),
                     ],
                   ),
@@ -268,15 +251,13 @@ class _AudioPlayerState extends State<AudioPlayer> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
-                        onPressed: () => _seek(
-                            Duration(seconds: -10)), // Backward 10 seconds
-                        child: Text('Backward 10s'),
+                        onPressed: () => _seek(Duration(seconds: -10)), // Backward 10 seconds
+                        child: Text('backward10s'.tr),
                       ),
                       SizedBox(width: 10),
                       ElevatedButton(
-                        onPressed: () =>
-                            _seek(Duration(seconds: 10)), // Forward 10 seconds
-                        child: Text('Forward 10s'),
+                        onPressed: () => _seek(Duration(seconds: 10)), // Forward 10 seconds
+                        child: Text('forward10s'.tr),
                       ),
                     ],
                   ),

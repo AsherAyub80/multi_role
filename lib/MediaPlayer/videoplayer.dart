@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:get/get.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({Key? key}) : super(key: key);
@@ -27,7 +28,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     super.initState();
     _initializeBannerAd();
 
-    // Initialize the player
     _player = Player(
       configuration: PlayerConfiguration(
         title: 'Media Application',
@@ -37,10 +37,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       ),
     );
 
-    // Initialize the video controller
     _controller = VideoController(_player);
 
-    // Create and open a playlist
     final playlist = Playlist(
       [
         Media(
@@ -54,13 +52,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         Media(
             'https://user-images.githubusercontent.com/28951144/229373720-14d69157-1a56-4a78-a2f4-d7a134d7c3e9.mp4'),
       ],
-      index: 0, // Start with the first video
+      index: 0,
     );
 
-    // Open the playlist
     _player.open(playlist);
 
-    // Listen for player events
     _playingSubscription = _player.stream.playing.listen((playing) {
       setState(() {
         _isPlaying = playing;
@@ -77,11 +73,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   @override
   void dispose() {
     _bannerAd.dispose();
-    // Dispose of the player and subscriptions
     _playingSubscription.cancel();
     _positionSubscription.cancel();
     _player.dispose();
-    
     super.dispose();
   }
 
@@ -120,14 +114,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           setState(() {
             _isAdLoaded = true;
           });
-          print('BannerAd loaded.');
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
           ad.dispose();
           setState(() {
             _isAdLoaded = false;
           });
-          print('BannerAd failed to load: $error');
         },
       ),
     );
@@ -137,9 +129,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Video Player'),
-      ),
+      appBar: AppBar(title: Text('videoPlayerTitle'.tr)),
       body: Center(
         child: Column(
           children: [
@@ -147,7 +137,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Video rendering widget
                   Container(
                     width: 300,
                     height: 200,
@@ -159,7 +148,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    'Position: ${_currentPosition.inMinutes}:${_currentPosition.inSeconds.remainder(60)}',
+                    'position'.tr +
+                        ([
+                          '${_currentPosition.inMinutes}:${_currentPosition.inSeconds.remainder(60)}'
+                        ]).toString(),
                     style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(height: 20),
@@ -170,29 +162,29 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     children: [
                       ElevatedButton(
                         onPressed: _playPause,
-                        child: Text(_isPlaying ? 'Pause' : 'Play'),
+                        child: Text(_isPlaying ? 'pause'.tr : 'play'.tr),
                       ),
                       ElevatedButton(
                         onPressed: _stop,
-                        child: const Text('Stop'),
+                        child: Text('stop'.tr),
                       ),
                       ElevatedButton(
                         onPressed: () => _seek(const Duration(
                             seconds: -10)), // Backward 10 seconds
-                        child: const Text('Backward 10s'),
+                        child: Text('backward10s'.tr),
                       ),
                       ElevatedButton(
                         onPressed: () => _seek(
                             const Duration(seconds: 10)), // Forward 10 seconds
-                        child: const Text('Forward 10s'),
+                        child: Text('forward10s'.tr),
                       ),
                       ElevatedButton(
                         onPressed: _nextVideo,
-                        child: const Text('Next Video'),
+                        child: Text('next'.tr),
                       ),
                       ElevatedButton(
                         onPressed: _previousVideo,
-                        child: const Text('Previous Video'),
+                        child: Text('previous'.tr),
                       ),
                     ],
                   ),
