@@ -5,11 +5,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:multi_role/Home/home_page.dart';
 import 'package:multi_role/firebase_options.dart';
+import 'package:multi_role/localization/languages.dart';
 import 'package:multi_role/strippayment/payment_screen.dart';
 import 'package:multi_role/strippayment/payment_service.dart';
 import 'package:multi_role/theme/theme_controller.dart';
 import 'package:provider/provider.dart';
+import 'package:get/get.dart'; // Import GetX
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,19 +43,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, child) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
+    return GetMaterialApp(
+      // Use GetMaterialApp for localization
+      debugShowCheckedModeBanner: false,
+      translations: Languages(), // Add your translations class
+      locale: Locale('en', 'US'), // Set the device locale
+      fallbackLocale: Locale('en', 'US'), // Fallback locale
 
-          theme: ThemeData(
-            brightness:
-                themeProvider.isDarkMode ? Brightness.dark : Brightness.light,
-          ),
+      theme: ThemeData(
+        brightness: Provider.of<ThemeProvider>(context).isDarkMode
+            ? Brightness.dark
+            : Brightness.light,
+      ),
 
-          home: PaymentScreen(), // Replace with your actual home screen
-        );
-      },
+      home: HomePage(),
     );
   }
 }

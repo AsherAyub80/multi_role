@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:multi_role/MediaPlayer/audio_player.dart';
 import 'package:multi_role/QrCodeScanner/qr.dart';
@@ -17,6 +18,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late BannerAd _bannerAd;
   bool _isAdLoaded = false;
+  String _selectedLanguage = 'English';
 
   @override
   void initState() {
@@ -55,19 +57,60 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  void _changeLanguage(String languageCode) {
+    Locale locale;
+    switch (languageCode) {
+      case 'English':
+        locale = Locale('en', 'US');
+        break;
+      case 'اردو':
+        locale = Locale('ur', 'PK');
+        break;
+      case 'العربية':
+        locale = Locale('ar');
+        break;
+      case 'Español':
+        locale = Locale('es');
+        break;
+      default:
+        locale = Locale('en', 'US');
+    }
+    Get.updateLocale(locale);
+    setState(() {
+      _selectedLanguage = languageCode;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
+        title: Text('appTitle'.tr),
         actions: [
           IconButton(
-              onPressed: () {
-                theme.toggleTheme();
-              },
-              icon: Icon(Icons.light)),
+            onPressed: () {
+              theme.toggleTheme();
+            },
+            icon: Icon(Icons.light),
+          ),
+          DropdownButton<String>(
+            value: _selectedLanguage,
+            icon: Icon(Icons.language),
+            onChanged: (String? newValue) {
+              if (newValue != null) {
+                _changeLanguage(newValue);
+              }
+            },
+            items: <String>['English', 'اردو', 'العربية', 'Español']
+                .map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
         ],
-        title: Text('Home Page'),
       ),
       body: Column(
         children: [
@@ -138,7 +181,6 @@ class _HomePageState extends State<HomePage> {
         return 'Scan QR Code';
       case 3:
         return 'Generate QR Code';
-
       case 4:
         return 'Video Player';
       case 5:
@@ -175,7 +217,6 @@ class _HomePageState extends State<HomePage> {
               context,
               MaterialPageRoute(builder: (context) => QRCodeGenerator()),
             );
-
       case 4:
         return () => Navigator.push(
               context,
