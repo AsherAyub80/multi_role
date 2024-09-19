@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:get/get.dart';
 import 'package:syncfusion_flutter_barcodes/barcodes.dart';
 
 class QRCodeGenerator extends StatefulWidget {
@@ -29,8 +30,7 @@ class _QRCodeGeneratorState extends State<QRCodeGenerator> {
 
   void _initializeBannerAd() {
     _bannerAd = BannerAd(
-      adUnitId:
-          'ca-app-pub-3940256099942544/6300978111', // Test Banner Ad Unit ID
+      adUnitId: 'ca-app-pub-3940256099942544/6300978111',
       size: AdSize.banner,
       request: const AdRequest(),
       listener: BannerAdListener(
@@ -38,14 +38,12 @@ class _QRCodeGeneratorState extends State<QRCodeGenerator> {
           setState(() {
             _isBannerLoaded = true;
           });
-          print('BannerAd loaded.');
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
           ad.dispose();
           setState(() {
             _isBannerLoaded = false;
           });
-          print('BannerAd failed to load: $error');
         },
       ),
     );
@@ -54,8 +52,7 @@ class _QRCodeGeneratorState extends State<QRCodeGenerator> {
 
   void _loadRewardedAd() {
     RewardedAd.load(
-      adUnitId:
-          'ca-app-pub-3940256099942544/5224354917', // Test Rewarded Ad Unit ID
+      adUnitId: 'ca-app-pub-3940256099942544/5224354917',
       request: const AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (RewardedAd ad) {
@@ -63,10 +60,8 @@ class _QRCodeGeneratorState extends State<QRCodeGenerator> {
             _rewardedAd = ad;
             _isAdLoaded = true;
           });
-          print('RewardedAd loaded.');
         },
         onAdFailedToLoad: (LoadAdError error) {
-          print('RewardedAd failed to load: $error');
           setState(() {
             _isAdLoaded = false;
           });
@@ -77,35 +72,17 @@ class _QRCodeGeneratorState extends State<QRCodeGenerator> {
 
   void _showRewardedAd() {
     if (_isAdLoaded) {
-      _rewardedAd.fullScreenContentCallback = FullScreenContentCallback(
-        onAdDismissedFullScreenContent: (RewardedAd ad) {
-          ad.dispose();
-          _loadRewardedAd(); // Load a new ad for future use
-          if (_isAdWatched) {
-            _generateQRCode();
-          }
-        },
-        onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
-          ad.dispose();
-          _loadRewardedAd(); // Load a new ad for future use
-        },
-      );
-
-      _rewardedAd.show(
-        onUserEarnedReward: (ad, reward) {
-          _generateQRCode();
-        },
-      );
-    } else {
-      print('RewardedAd is not loaded yet.');
+      _rewardedAd.show(onUserEarnedReward: (ad, reward) {
+        _generateQRCode();
+      });
     }
   }
 
   void _generateQRCode() {
     setState(() {
-      qrValue = barController.text; // Update QR code value
-      barController.clear(); // Clear the input field
-      _isAdWatched = false; // Reset ad watch state for next use
+      qrValue = barController.text;
+      barController.clear();
+      _isAdWatched = false;
     });
   }
 
@@ -122,7 +99,7 @@ class _QRCodeGeneratorState extends State<QRCodeGenerator> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('QR Code Generator'),
+        title: Text('qrCodeGenerator'.tr), // Localized title
       ),
       body: Column(
         children: [
@@ -131,66 +108,46 @@ class _QRCodeGeneratorState extends State<QRCodeGenerator> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(height: 50),
                   if (qrValue.isNotEmpty)
-                    Center(
-                      child: SfBarcodeGenerator(
-                        value: qrValue,
-                        symbology: QRCode(),
-                        showValue: true,
-                      ),
+                    SfBarcodeGenerator(
+                      value: qrValue,
+                      symbology: QRCode(),
+                      showValue: true,
                     ),
-                  SizedBox(height: qrValue.isEmpty ? 350 : 50),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: TextField(
-                      controller: barController,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                  
+                    SizedBox(
+                          height: qrValue.isEmpty ? 350 : 0,
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                      Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: TextField(
+                            controller: barController,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
+                  SizedBox(
+                    height: 10,
                   ),
-                  SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
                       if (barController.text.isNotEmpty) {
-                        if (_isAdLoaded) {
-                          _showRewardedAd();
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                  'Rewarded ad is not loaded yet. Please try again.'),
-                            ),
-                          );
-                        }
+                        _showRewardedAd();
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Please enter some text!'),
-                          ),
+                          SnackBar(content: Text('pleaseEnterText'.tr)),
                         );
                       }
                     },
-                    child: Text('Generate QR Code'),
+                    child: Text('generateQRCode'.tr), // Localized button text
                   ),
-                  SizedBox(height: 20), // Add spacing before the ad
                 ],
               ),
             ),
           ),
           if (_isBannerLoaded)
             Container(
-              color: Colors
-                  .white, // Optional: Set background color to match your design
               height: _bannerAd.size.height.toDouble(),
               child: AdWidget(ad: _bannerAd),
             ),

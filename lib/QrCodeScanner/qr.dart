@@ -5,6 +5,8 @@ import 'package:multi_role/QrCodeScanner/barcode_label.dart';
 import 'package:multi_role/QrCodeScanner/barcodewidgets/scan_button.dart';
 import 'package:multi_role/QrCodeScanner/barcodewidgets/scan_error.dart';
 import 'package:multi_role/QrCodeScanner/barcodewidgets/scanbarcode_label.dart';
+import 'package:get/get.dart';
+
 
 class BarcodeScannerWithOverlay extends StatefulWidget {
   const BarcodeScannerWithOverlay({super.key});
@@ -80,7 +82,7 @@ class _BarcodeScannerWithOverlayState extends State<BarcodeScannerWithOverlay> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Scanner with Overlay Example app'),
+        title:  Text('scannedBarcode'.tr),
       ),
       body: Stack(
         fit: StackFit.expand,
