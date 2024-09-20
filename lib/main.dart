@@ -8,7 +8,6 @@ import 'package:media_kit/media_kit.dart';
 import 'package:multi_role/Home/home_page.dart';
 import 'package:multi_role/firebase_options.dart';
 import 'package:multi_role/localization/languages.dart';
-import 'package:multi_role/strippayment/payment_screen.dart';
 import 'package:multi_role/strippayment/payment_service.dart';
 import 'package:multi_role/theme/theme_controller.dart';
 import 'package:provider/provider.dart';

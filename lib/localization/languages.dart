@@ -12,8 +12,7 @@ class Languages extends Translations {
           'redirect': 'Redirect',
           'copiedToClipboard': 'Copied to clipboard!',
           'pleaseEnterText': 'Please enter some text!',
-          'rewardedAdNotLoaded':
-              'Rewarded ad is not loaded yet. Please try again.',
+          'rewardedAdNotLoaded': 'Rewarded ad is not loaded yet. Please try again.',
           'qrCodeGenerator': 'QR Code Generator',
           'generateQRCode': 'Generate QR Code',
           'scannerOverlayTitle': 'Scanner with Overlay Example',
@@ -41,11 +40,12 @@ class Languages extends Translations {
           'cancel': 'Cancel',
           'filterPreview': 'Filter Preview',
           'save': 'Save',
+          'saveToGallery': 'Save to Gallery', 
           'fullScreenViewer': 'Full Screen Viewer',
           'close': 'Close',
           'loadingImage': 'Loading image...',
           'documentScanner': 'Document Scanner',
-          'delete': 'Delete', // Added here
+          'delete': 'Delete',
         },
         'ur_PK': {
           'appTitle': 'ملٹی رول ایپ',
@@ -56,8 +56,7 @@ class Languages extends Translations {
           'redirect': 'منتقل کریں',
           'copiedToClipboard': 'کاپی کر دیا گیا!',
           'pleaseEnterText': 'براہ کرم کچھ متن درج کریں!',
-          'rewardedAdNotLoaded':
-              'انعامی اشتہار ابھی لوڈ نہیں ہوا۔ براہ کرم دوبارہ کوشش کریں۔',
+          'rewardedAdNotLoaded': 'انعامی اشتہار ابھی لوڈ نہیں ہوا۔ براہ کرم دوبارہ کوشش کریں۔',
           'qrCodeGenerator': 'QR کوڈ جنریٹر',
           'generateQRCode': 'QR کوڈ بنائیں',
           'scannerOverlayTitle': 'مثال کے ساتھ اسکینر',
@@ -85,11 +84,12 @@ class Languages extends Translations {
           'cancel': 'منسوخ کریں',
           'filterPreview': 'فلٹر کا پیش نظارہ',
           'save': 'محفوظ کریں',
+          'saveToGallery': 'گیلری میں محفوظ کریں', // Added here
           'fullScreenViewer': 'پوری اسکرین دیکھنے والا',
           'close': 'بند کریں',
           'loadingImage': 'تصویر لوڈ ہو رہی ہے...',
           'documentScanner': 'دستاویز سکینر',
-          'delete': 'حذف کریں', // Added here
+          'delete': 'حذف کریں',
         },
         'ar': {
           'appTitle': 'تطبيق الأدوار المتعددة',
@@ -100,8 +100,7 @@ class Languages extends Translations {
           'redirect': 'تحويل',
           'copiedToClipboard': 'تم النسخ إلى الحافظة!',
           'pleaseEnterText': 'يرجى إدخال بعض النصوص!',
-          'rewardedAdNotLoaded':
-              'الإعلان المدعوم لم يتم تحميله بعد. يرجى المحاولة مرة أخرى.',
+          'rewardedAdNotLoaded': 'الإعلان المدعوم لم يتم تحميله بعد. يرجى المحاولة مرة أخرى.',
           'qrCodeGenerator': 'مولد QR كود',
           'generateQRCode': 'إنشاء QR كود',
           'scannerOverlayTitle': 'تطبيق المسح مع طبقة فوقية',
@@ -129,11 +128,12 @@ class Languages extends Translations {
           'cancel': 'إلغاء',
           'filterPreview': 'معاينة الفلتر',
           'save': 'حفظ',
+          'saveToGallery': 'حفظ إلى المعرض', 
           'fullScreenViewer': 'عارض الصورة بالكامل',
           'close': 'إغلاق',
           'loadingImage': 'جارٍ تحميل الصورة...',
           'documentScanner': 'ماسح الوثائق',
-          'delete': 'حذف', // Added here
+          'delete': 'حذف',
         },
         'es': {
           'appTitle': 'Aplicación de múltiples roles',
@@ -144,8 +144,7 @@ class Languages extends Translations {
           'redirect': 'Redirigir',
           'copiedToClipboard': '¡Copiado al portapapeles!',
           'pleaseEnterText': '¡Por favor, ingrese algún texto!',
-          'rewardedAdNotLoaded':
-              'El anuncio recompensado no se ha cargado aún. Por favor, inténtelo de nuevo.',
+          'rewardedAdNotLoaded': 'El anuncio recompensado no se ha cargado aún. Por favor, inténtelo de nuevo.',
           'qrCodeGenerator': 'Generador de QR Code',
           'generateQRCode': 'Generar QR Code',
           'scannerOverlayTitle': 'Escáner con superposición',
@@ -173,11 +172,12 @@ class Languages extends Translations {
           'cancel': 'Cancelar',
           'filterPreview': 'Vista previa del filtro',
           'save': 'Guardar',
+          'saveToGallery': 'Guardar en la galería', 
           'fullScreenViewer': 'Visor de pantalla completa',
           'close': 'Cerrar',
           'loadingImage': 'Cargando imagen...',
           'documentScanner': 'Escáner de documentos',
-          'delete': 'Eliminar', // Added here
+          'delete': 'Eliminar',
         },
       };
 }
