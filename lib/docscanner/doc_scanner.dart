@@ -6,7 +6,7 @@ import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:multi_role/docscanner/full_image.dart';
 import 'package:multi_role/docscanner/filter_preview.dart';
 import 'package:get/get.dart';
-
+import 'package:gal/gal.dart'; // Importing gal package
 
 class DocScanner extends StatefulWidget {
   const DocScanner({Key? key}) : super(key: key);
@@ -18,21 +18,20 @@ class DocScanner extends StatefulWidget {
 class _DocScannerState extends State<DocScanner> {
   final List<String> _pictures = [];
   bool _isLoading = false;
-  InterstitialAd? _interstitialAd; // Change to nullable type
+  InterstitialAd? _interstitialAd;
   bool _isInterstitialAdLoaded = false;
-
-  final GetStorage _storage = GetStorage(); // Initialize GetStorage
+  final GetStorage _storage = GetStorage();
 
   @override
   void initState() {
     super.initState();
     _loadInterstitialAd();
-    _loadStoredPictures(); // Load stored pictures
+    _loadStoredPictures();
   }
 
   void _loadInterstitialAd() {
     InterstitialAd.load(
-      adUnitId: 'ca-app-pub-3940256099942544/1033173712', // Test ad unit ID
+      adUnitId: 'ca-app-pub-3940256099942544/1033173712',
       request: AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (InterstitialAd ad) {
@@ -40,7 +39,6 @@ class _DocScannerState extends State<DocScanner> {
             _interstitialAd = ad;
             _isInterstitialAdLoaded = true;
           });
-          print('InterstitialAd loaded.');
         },
         onAdFailedToLoad: (LoadAdError error) {
           print('InterstitialAd failed to load: $error');
@@ -57,16 +55,14 @@ class _DocScannerState extends State<DocScanner> {
       _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
         onAdDismissedFullScreenContent: (InterstitialAd ad) {
           ad.dispose();
-          _loadInterstitialAd(); // Load a new ad for future use
+          _loadInterstitialAd();
         },
         onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
           ad.dispose();
-          _loadInterstitialAd(); // Load a new ad for future use
+          _loadInterstitialAd();
         },
       );
       _interstitialAd!.show();
-    } else {
-      print('InterstitialAd is not loaded yet.');
     }
   }
 
@@ -81,20 +77,13 @@ class _DocScannerState extends State<DocScanner> {
         setState(() {
           _pictures.addAll(newPictures);
         });
-
-        // Save to GetStorage
         _storage.write('pictures', _pictures);
-
         _showInterstitialAd();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No pictures returned')),
-        );
+        _showSnackbar('No pictures returned');
       }
     } catch (exception) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error scanning documents: $exception')),
-      );
+      _showSnackbar('Error scanning documents: $exception');
     } finally {
       setState(() {
         _isLoading = false;
@@ -103,12 +92,9 @@ class _DocScannerState extends State<DocScanner> {
   }
 
   void _loadStoredPictures() {
-    // Read as List<dynamic> first to avoid type issues
     final storedPictures = _storage.read('pictures') as List<dynamic>?;
-
-    // Convert List<dynamic> to List<String>
-    final picturesList = storedPictures?.map((e) => e.toString()).toList() ?? [];
-
+    final picturesList =
+        storedPictures?.map((e) => e.toString()).toList() ?? [];
     setState(() {
       _pictures.addAll(picturesList);
     });
@@ -137,16 +123,73 @@ class _DocScannerState extends State<DocScanner> {
         final index = _pictures.indexOf(imagePath);
         if (index != -1) {
           _pictures[index] = updatedImagePath;
-          // Update storage
           _storage.write('pictures', _pictures);
         }
       });
     }
   }
 
+  Future<void> _saveImage(String imagePath) async {
+    try {
+      await Gal.putImage(imagePath);
+      _showSnackbar('Image saved to gallery!');
+      print(imagePath);
+    } catch (e) {
+      _showSnackbar('Failed to save image: $e');
+    }
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  void _showFilterDialog(String imagePath, int index) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('applyFilter'.tr),
+        content: Text('chooseFilter'.tr),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _showInterstitialAd();
+              _navigateToFilterScreen(imagePath);
+            },
+            child: Text('applyFilter'.tr),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('cancel'.tr),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _pictures.removeAt(index);
+              });
+              Navigator.of(context).pop();
+            },
+            child: Text('delete'.tr),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _saveImage(imagePath); // Save image to gallery
+            },
+            child: Text('saveToGallery'.tr),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void dispose() {
-    _interstitialAd?.dispose(); 
+    _interstitialAd?.dispose();
     super.dispose();
   }
 
@@ -177,7 +220,8 @@ class _DocScannerState extends State<DocScanner> {
                     ),
                   ),
                   SizedBox(height: 10),
-                  Text('scanning'.tr, style: TextStyle(fontSize: 18, color: Colors.grey)),
+                  Text('scanning'.tr,
+                      style: TextStyle(fontSize: 18, color: Colors.grey)),
                 ],
               ),
             )
@@ -195,7 +239,7 @@ class _DocScannerState extends State<DocScanner> {
                     final picture = _pictures[index];
                     return GestureDetector(
                       onTap: () => _openFullScreenImageViewer(index),
-                      onLongPress: () => _showFilterDialog(picture,index),
+                      onLongPress: () => _showFilterDialog(picture, index),
                       child: Card(
                         elevation: 4,
                         shape: RoundedRectangleBorder(
@@ -212,43 +256,6 @@ class _DocScannerState extends State<DocScanner> {
                     );
                   },
                 ),
-    );
-  }
-
-  void _showFilterDialog(String imagePath,index) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('applyFilter'.tr),
-        content: Text('chooseFilter'.tr),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              _showInterstitialAd();
-              _navigateToFilterScreen(imagePath);
-            },
-            child: Text('applyFilter'.tr),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text('cancel'.tr),
-          ),
-
-          TextButton(
-            onPressed: () {
-              setState(() {
-                              _pictures.removeAt(index);
-
-              });
-              Navigator.of(context).pop();
-            },
-            child: Text('delete'.tr),
-          ),
-        ],
-      ),
     );
   }
 }
